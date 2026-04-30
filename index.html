@@ -3,28 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muble Marketplace</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Random Joke Generator</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background-color: #f0f0f0;
+        }
+        #joke {
+            margin: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        #counter {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Muble Marketplace</h1>
-    </header>
-    <main>
-        <section>
-            <h2>Featured Products</h2>
-            <div class="product">
-                <h3>Product 1</h3>
-                <p>Description of product 1.</p>
-            </div>
-            <div class="product">
-                <h3>Product 2</h3>
-                <p>Description of product 2.</p>
-            </div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 Muble Marketplace</p>
-    </footer>
+    <h1>Random Joke Generator</h1>
+    <div id="joke"></div>
+    <button id="randomJoke">Random Joke</button>
+    <button id="programmingJoke">Programming Joke</button>
+    <button id="knockKnockJoke">Knock Knock Joke</button>
+    <div id="counter">Jokes Generated: <span id="jokeCount">0</span></div>
+    <script>
+        let jokeCount = 0;
+        const jokeElement = document.getElementById('joke');
+        const jokeCountElement = document.getElementById('jokeCount');
+
+        async function fetchJoke(category) {
+            try {
+                const response = await fetch(`https://v2.jokeapi.dev/joke/${category}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                jokeElement.innerText = 'Error fetching joke: ' + error.message;
+            }
+        }
+
+        function displayJoke(jokeData) {
+            if (jokeData.setup) {
+                jokeElement.innerText = jokeData.setup + '\n' + jokeData.delivery;
+            } else if (jokeData.joke) {
+                jokeElement.innerText = jokeData.joke;
+            } else {
+                jokeElement.innerText = 'No joke found';
+            }
+            jokeCount++;
+            jokeCountElement.innerText = jokeCount;
+        }
+
+        document.getElementById('randomJoke').onclick = async function() {
+            const jokeData = await fetchJoke('Any');
+            displayJoke(jokeData);
+        };
+
+        document.getElementById('programmingJoke').onclick = async function() {
+            const jokeData = await fetchJoke('Programming');
+            displayJoke(jokeData);
+        };
+
+        document.getElementById('knockKnockJoke').onclick = async function() {
+            const jokeData = await fetchJoke('Knock-Knock');
+            displayJoke(jokeData);
+        };
+    </script>
 </body>
 </html>
